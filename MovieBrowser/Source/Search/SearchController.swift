@@ -10,7 +10,7 @@ import UIKit
 import Combine
 
 final class SearchController: NSObject {
-    var movieClient: MovieClient?
+    var movieClient: MovieAPI?
     
     var onSearchResults: (([Movie]) -> Void)?
     var showError: ((String) -> Void)?

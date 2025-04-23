@@ -12,7 +12,7 @@ import Combine
 
 class SearchViewController: UIViewController {
     
-    var movieClient: MovieClient = MovieClient()
+    var movieClient: MovieAPI = MovieClient()
     
     @IBOutlet var searchController: SearchController?
     @IBOutlet weak var searchBar: UISearchBar!
@@ -78,6 +78,11 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
             cell.releaseDate.text = DateFormatter.displayFormatter.string(from: releaseDate)
         }
         cell.score.text = String(format: "%.1f", movie.popularity)
+      
+        if let url = movie.posterURL {
+            cell.movieThumb.loadImage(url: url)
+        }
+        
         return cell
     }
     
@@ -94,5 +99,20 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
 extension SearchViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         self.searchText = searchText
+    }
+}
+
+class ImageLoader: UIImageView {
+    var task: URLSessionTask!
+    
+    func loadImage(url: URL) {
+        task = URLSession.shared.dataTask(with: url) { data, _, error in
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    self.image = image
+                }
+            }
+        }
+        task.resume()
     }
 }

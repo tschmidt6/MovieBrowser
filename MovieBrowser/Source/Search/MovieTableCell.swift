@@ -12,4 +12,5 @@ class MovieTableCell: UITableViewCell {
     @IBOutlet weak var title: UILabel!
     @IBOutlet weak var score: UILabel!
     @IBOutlet weak var releaseDate: UILabel!
+    @IBOutlet weak var movieThumb: ImageLoader!
 }
