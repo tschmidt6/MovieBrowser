@@ -21,3 +21,9 @@ struct Movie: Codable, Equatable {
         return URL(string: "https://image.tmdb.org/t/p/original\(path)")
     }
 }
+
+struct MovieSearchResponse: Decodable {
+    let results: [Movie]
+    let page: Int
+    let total_pages: Int
+}

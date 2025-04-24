@@ -10,13 +10,13 @@ import UIKit
 import Combine
 
 protocol MovieAPI {
-    func searchMovies(search: String) -> AnyPublisher<[Movie], Error>
+    func searchMovies(search: String, page: Int) -> AnyPublisher<MovieSearchResponse, Error>
 }
 
 class MovieClient: MovieAPI {
     private let session: URLSession
     
-    let apiBearerToken = "Bearer YOUR API KEY HERE" // pragma: allowlist-secret
+    let apiBearerToken = "Bearer YOU API KEY HERE" // pragma: allowlist-secret
     private let baseURL = URL(string: "https://api.themoviedb.org/3")!
     
     
@@ -24,14 +24,13 @@ class MovieClient: MovieAPI {
         self.session = session
     }
     
-    struct MovieSearchResponse: Decodable {
-        let results: [Movie]
-    }
+
     
     
-    func searchMovies(search: String) -> AnyPublisher<[Movie], Error> {
+    func searchMovies(search: String, page: Int = 1) -> AnyPublisher<MovieSearchResponse, Error> {
         var urlComponents = URLComponents(url: baseURL.appendingPathComponent("search/movie"), resolvingAgainstBaseURL: false)!
-        urlComponents.queryItems = [URLQueryItem(name: "query", value: "\(search)")]
+        urlComponents.queryItems = [URLQueryItem(name: "query", value: "\(search)"),
+                                    URLQueryItem(name: "page", value: "\(page)")]
         
         guard let url = urlComponents.url else { return Fail(error: ServiceError.unexpectedValues).eraseToAnyPublisher() }
         
@@ -48,7 +47,7 @@ class MovieClient: MovieAPI {
                 if (200...299).contains(httpResponse.statusCode) {
                     do {
                         // Attempt to map the Json data to [Movie]
-                        return try JSONDecoder().decode(MovieSearchResponse.self, from: data).results
+                        return try JSONDecoder().decode(MovieSearchResponse.self, from: data)
                     } catch {
                         throw ServiceError.decodingError
                     }

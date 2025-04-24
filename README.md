@@ -69,3 +69,25 @@ You will need the following 2 endpoints:
 
 - Use **Storyboard** to create your initial UI and lay out the screen.
 - Add code as needed to wire up the UI to the logic.
+
+## Followup Questions During Interview
+- What are the differences between classes and structs in the case of UIKit Viewcontrollers and SwuiftUI views
+- How does a SwiftUI view know to update?
+  - What do all the SwiftUI types do? @State, @Binding, etc.
+  - If Structs are immutable, how does @State change?
+- How would you implement pagination to your table and API?
+  - What is prefetching?
+- If a user clicks the same cell over and over, how do you handle duplicate API calls?
+  - What cache would you use? Would there ever be memory issues if someone is on the app for a long time?
+- If the API session token expires how would you handle that?
+  - Where would you store the session token securly?
+  - Have you used Keychain?
+- What is deep linking?
+- What are the access levels of Swift? Internal, private, fileprivate, open
+- What is NSManagedContext in Coredata?
+  - What does the unique ID do?
+- What are the different types of DispatchQueues?
+  - What does priority do?
+- If and API returns a string or a double how would you deal with that? init decoder, decoding keys
+- In code reviews what do you look for?
+- How would you unit test API calls without making a real network request? Dependecy Injection

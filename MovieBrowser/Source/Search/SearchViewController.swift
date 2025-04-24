@@ -38,7 +38,11 @@ class SearchViewController: UIViewController {
         searchController?.movieClient = movieClient
         
         searchController?.onSearchResults = { [weak self] movies in
-            self?.movies = movies
+            self?.movies.append(contentsOf: movies)
+            self?.tableView.reloadData()
+        }
+        searchController?.resetSearch = { [weak self] in
+            self?.movies = []
             self?.tableView.reloadData()
         }
         searchController?.showError = { [weak self] message in
@@ -69,6 +73,11 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.row >= self.movies.count-1 {
+            if self.searchController?.hasMorePages == true && self.searchController?.isLoading == false {
+                self.searchController?.requestNextPage()
+            }
+        }
         let movie = movies[indexPath.row]
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? MovieTableCell else {
             return UITableViewCell()
@@ -102,17 +111,28 @@ extension SearchViewController: UISearchBarDelegate {
     }
 }
 
+
+
 class ImageLoader: UIImageView {
-    var task: URLSessionTask!
+    private static let thumbCache = NSCache<NSURL, UIImage>()
+    var task: URLSessionTask?
     
     func loadImage(url: URL) {
+        task?.cancel()
+        
+        if let cachedImage = ImageLoader.thumbCache.object(forKey: url as NSURL) {
+            self.image = cachedImage
+            return
+        }
+        
         task = URLSession.shared.dataTask(with: url) { data, _, error in
             if let data = data, let image = UIImage(data: data) {
+                ImageLoader.thumbCache.setObject(image, forKey: url as NSURL)
                 DispatchQueue.main.async {
                     self.image = image
                 }
             }
         }
-        task.resume()
+        task?.resume()
     }
 }
